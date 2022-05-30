@@ -2,7 +2,10 @@
 #include <QQmlApplicationEngine>
 
 #include <QLocale>
+#include <QQmlContext>
 #include <QTranslator>
+
+#include "base/I18n.h"
 
 int main(int argc, char *argv[])
 {
@@ -17,8 +20,11 @@ int main(int argc, char *argv[])
             break;
         }
     }
-
+    I18n i18n;
     QQmlApplicationEngine engine;
+    QObject::connect(&i18n, &I18n::retransRequest, &engine, &QQmlApplicationEngine::retranslate);
+
+    engine.rootContext()->setContextProperty("i18n", &i18n);
     const QUrl url(u"qrc:/TamKL/main.qml"_qs);
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
                      &app, [url](QObject *obj, const QUrl &objUrl) {
